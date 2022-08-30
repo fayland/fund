@@ -30,7 +30,7 @@
 [% stars = 0 %]
 <tr class="[% IF row.shengou_fee + 0 == 0 AND row.shuhui_d30_fee + 0 == 0 %]bg-success[% END %]">
     <td><a href="https://fund.eastmoney.com/[% row.code %].html" target="_blank">[% row.code %]</a> [% row.name %]</td>
-    <td>[% row.RATIO %] ([% row.STKNUM %])</td>
+    <td>[% row.RATIO %] (<span class="[% IF row.STKNUM > 30 %]font-weight-bold text-danger[% stars = stars + 1 %][% END %]">[% row.STKNUM %]</span>)</td>
     <td>[% row.shengou_fee %]</td>
     <td><span class="[% IF row.shuhui_x30_fee + 0 == 0 %]font-weight-bold text-danger[% stars = stars + 1 %][% END %]">[% row.shuhui_x30_fee %]</span> - [% row.shuhui_d30_fee %]</td>
     <td>[% row.jingzichan %]</td>
