@@ -32,6 +32,7 @@ foreach my $page (1 .. 5) {
         $row->{HSGRT} =~ s/\%$//;
         $dbh->do("INSERT INTO xingu_huopei (fund, STKNUM, RATIO, HSGRT) VALUES (?, ?, ?, ?)", undef,
             $row->{FCODE}, $row->{STKNUM}, $row->{RATIO}, $row->{HSGRT});
+        $dbh->do("INSERT IGNORE INTO fund (code) VALUES (?)", undef, $row->{FCODE});
     }
     sleep 5;
 }

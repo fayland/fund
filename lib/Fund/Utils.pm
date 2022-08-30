@@ -11,7 +11,7 @@ our @EXPORT_OK = qw/dbh ua/;
 sub dbh {
     return DBI->connect(
         "DBI:mysql:database=fund:mysql_enable_utf8=1", "root", "perl4ever",
-        { RaiseError => 1, AutoCommit => 1 }
+        { PrintError => 1, RaiseError => 1, AutoCommit => 1 }
     );
 }
 
