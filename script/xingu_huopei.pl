@@ -13,6 +13,8 @@ use Encode;
 my $ua = ua();
 my $dbh = dbh();
 
+# https://fund.eastmoney.com/data/dxgjj_xgccjjyl.html#jyy;RATIO;desc;1
+
 # get 5 pages
 foreach my $page (1 .. 5) {
     my $url = "https://fund.eastmoney.com/API/FundDXGJJ.ashx?callback=jQuery18306428571140128803_1661830124724&r=" . time() . "000&m=8&pageindex=$page&sorttype=desc&SFName=RATIO&IsSale=1&_=" . time();

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <meta http-equiv="X-UA-Compatible" content="Chrome=1,IE=edge" />
+    <link rel="stylesheet" href="bootstrap.min.css" />
+    <style>
+    .font-weight-bold { font-weight: bold }
+    </style>
+</head>
+<body>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Code</th>
+            <th>获配占比</th>
+            <th>申购费</th>
+            <th>赎回费</th>
+            <th>净资产</th>
+            <th>机构比率</th>
+            <th>股票占比</th>
+            <th>涨幅</th>
+            <th>STARS</th>
+        </tr>
+    </thead>
+    <tbody>
+
+[% FOREACH row IN rows %]
+[% stars = 0 %]
+<tr class="[% IF row.shengou_fee + 0 == 0 AND row.shuhui_d30_fee + 0 == 0 %]bg-success[% END %]">
+    <td><a href="https://fund.eastmoney.com/[% row.code %].html" target="_blank">[% row.code %]</a> [% row.name %]</td>
+    <td>[% row.RATIO %] ([% row.STKNUM %])</td>
+    <td>[% row.shengou_fee %]</td>
+    <td><span class="[% IF row.shuhui_x30_fee + 0 == 0 %]font-weight-bold text-danger[% stars = stars + 1 %][% END %]">[% row.shuhui_x30_fee %]</span> - [% row.shuhui_d30_fee %]</td>
+    <td>[% row.jingzichan %]</td>
+    <td><span class="[% IF row.jigou_rate > 50 %]font-weight-bold text-danger[% stars = stars + 1 %][% END %]">[% row.jigou_rate %]</td></td>
+    <td><span class="[% IF row.gupiao_rate < 50 %]font-weight-bold text-danger[% stars = stars + 1 %][% END %]">[% row.gupiao_rate %]</span> / [% row.zhaiquan_rate %] / [% row.xianjin_rate %]</td>
+    <td>
+        <span class="[% IF row.syl_1y > 0 %]font-weight-bold text-danger[% stars = stars + 1 %][% END %]">[% row.syl_1y %]</span>
+        / [% row.syl_3y %] / [% row.syl_6y %] / [% row.syl_1n %]
+    </td>
+    <td>[% stars %]</td>
+</tr>
+[% END %]
+
+</table>
+
+</body>
+</html>

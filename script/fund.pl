@@ -74,7 +74,9 @@ while (my $row = $sth->fetchrow_hashref) {
                 $data{shengou_fee} = $tds[2];
             }
         } elsif (index($label, $shuhui_text) > -1) {
+            my $x7 = decode_utf8('大于等于7天');
             my $x30 = decode_utf8('小于30天');
+            my $x30_2 = decode_utf8('小于等于29天');
             my $d30 = decode_utf8('大于等于30天');
             my $d30_2 = decode_utf8('大于30天');
             my @trs = $box->find('tbody tr')->each;
@@ -83,10 +85,13 @@ while (my $row = $sth->fetchrow_hashref) {
                 say Dumper(\@tds) if $DEBUG;
                 my $text = $tds[1];
                 my $fee  = $tds[2]; $fee =~ s/\%(.*?)$//;
-                if (index($text, $x30) > -1) {
+                if (index($text, $x30) > -1 || index($text, $x30_2) > -1) {
                     $data{shuhui_x30_fee} = $fee;
                 } elsif (index($text, $d30) > -1 || index($text, $d30_2) > -1) {
                     $data{shuhui_d30_fee} = $fee;
+                }elsif (index($text, $x7) > -1 || index($text, $x7) > -1) {
+                    $data{shuhui_x30_fee} ||= 0;
+                    $data{shuhui_d30_fee} ||= 0;
                 }
             }
         }
