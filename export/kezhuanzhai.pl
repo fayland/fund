@@ -13,8 +13,8 @@ use Encode;
 my $dbh = dbh();
 my $csv = Text::CSV_XS->new({ binary => 1, auto_diag => 1 });
 
-open(my $fh, '>', 'kezhuanzhai.csv');
-$csv->say($fh, ['代码', '名称', '比较基准', '1年涨幅', '6月涨幅', '3月涨幅', '1月涨幅', '机构占比', '规模']);
+open(my $fh, '>', "$Bin/kezhuanzhai.csv");
+$csv->say($fh, ['代码', '名称', '比较基准', '1年涨幅', '6月涨幅', '3月涨幅', '1月涨幅', '申购费', '管理费', '托管费', '销售费', '赎回(<30d)', '赎回(>30d)', '机构占比', '规模']);
 
 my $kezhuanzhai_text = "可转债";
 
@@ -31,6 +31,14 @@ while (my $row = $sth->fetchrow_hashref) {
         $row->{syl_6y},
         $row->{syl_3y},
         $row->{syl_1y},
+
+        $row->{shengou_fee},
+        $row->{guanli_fee},
+        $row->{tuoguan_fee},
+        $row->{xiaoshou_fee},
+        $row->{shuhui_x30_fee},
+        $row->{shuhui_d30_fee},
+
         $row->{jigou_rate},
         $row->{guimo},
     ]);

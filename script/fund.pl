@@ -90,6 +90,8 @@ while (my $row = $sth->fetchrow_hashref) {
                 @tds = map { s/\%(.*?)$//; $_ } @tds;
                 $data{shengou_fee} = $tds[2];
             }
+            # 每笔1000元
+            $data{shengou_fee} = -1 if $data{shengou_fee} =~ /[^\d\.]/;
         } elsif (index($label, $shuhui_text) > -1) {
             my $x7 = decode_utf8('大于等于7天');
             my $x30 = decode_utf8('小于30天');
