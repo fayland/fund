@@ -17,6 +17,7 @@
             <th>获配占比</th>
             <th>申购费</th>
             <th>赎回费</th>
+            <th>销售费/管理费/托管费</th>
             <th>净资产</th>
             <th>机构比率</th>
             <th>股票占比</th>
@@ -30,9 +31,10 @@
 [% stars = 0 %]
 <tr class="[% IF row.shengou_fee + 0 == 0 AND row.shuhui_d30_fee + 0 == 0 %]bg-success[% END %]">
     <td><a href="https://fund.eastmoney.com/[% row.code %].html" target="_blank">[% row.code %]</a> [% row.name %]</td>
-    <td>[% row.RATIO %] (<span class="[% IF row.STKNUM > 30 %]font-weight-bold text-danger[% stars = stars + 1 %][% END %]">[% row.STKNUM %]</span>)</td>
+    <td>[% row.RATIO %] (<span class="[% IF row.STKNUM >= 30 %]font-weight-bold text-danger[% stars = stars + 1 %][% END %]">[% row.STKNUM %]</span>)</td>
     <td>[% row.shengou_fee %]</td>
     <td><span class="[% IF row.shuhui_x30_fee + 0 == 0 %]font-weight-bold text-danger[% stars = stars + 1 %][% END %]">[% row.shuhui_x30_fee %]</span> - [% row.shuhui_d30_fee %]</td>
+    <td>[% row.xiaoshou_fee %]/[% row.guanli_fee %]/[% row.tuoguan_fee %]</td>
     <td>[% row.jingzichan %]</td>
     <td><span class="[% IF row.jigou_rate > 50 %]font-weight-bold text-danger[% stars = stars + 1 %][% END %]">[% row.jigou_rate %]</td></td>
     <td><span class="[% IF row.gupiao_rate < 50 %]font-weight-bold text-danger[% stars = stars + 1 %][% END %]">[% row.gupiao_rate %]</span> / [% row.zhaiquan_rate %] / [% row.xianjin_rate %]</td>

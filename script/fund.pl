@@ -16,7 +16,7 @@ my $dbh = dbh();
 my $DEBUG = $ENV{DEBUG} // 0;
 
 my $sth = $dbh->prepare("SELECT * FROM fund WHERE updated_at < ?");
-$sth->execute(time() - 30 * 86400);
+$sth->execute(time() - 3600 * 8);
 while (my $row = $sth->fetchrow_hashref) {
     # $row->{code} = '000646';
     my $url = "http://fund.eastmoney.com/pingzhongdata/" . $row->{code} . ".js";
@@ -38,6 +38,23 @@ while (my $row = $sth->fetchrow_hashref) {
     # $tds[1] =~ s/\%//;
     # $tds[2] =~ s/\%//;
     # $tds[3] =~ s/\%//;
+
+    if (not $row->{jizhun}) {
+        $url = "http://fundf10.eastmoney.com/jbgk_" . $row->{code} . ".html";
+        say "# get $url";
+        $res = $ua->get($url)->result;
+        my $dom = $res->dom;
+        my $jizhun_text = decode_utf8("业绩比较基准");
+        my @trs = $dom->find('table.info tr')->each;
+        foreach my $tr (@trs) {
+            my @th = $tr->find('th')->map('text')->each;
+            my @td = $tr->find('td')->map('text')->each;
+            if (index($th[0], $jizhun_text) > -1) {
+                $dbh->do("UPDATE fund SET jizhun = ? WHERE code = ?", undef, $td[0], $row->{code});
+                last;
+            }
+        }
+    }
 
     $url = "http://fundf10.eastmoney.com/jjfl_" . $row->{code} . ".html";
     say "# get $url";
@@ -90,8 +107,8 @@ while (my $row = $sth->fetchrow_hashref) {
                 } elsif (index($text, $d30) > -1 || index($text, $d30_2) > -1) {
                     $data{shuhui_d30_fee} = $fee;
                 }elsif (index($text, $x7) > -1 || index($text, $x7) > -1) {
-                    $data{shuhui_x30_fee} ||= 0;
-                    $data{shuhui_d30_fee} ||= 0;
+                    $data{shuhui_x30_fee} = $fee;
+                    $data{shuhui_d30_fee} = $fee;
                 }
             }
         }
@@ -110,16 +127,17 @@ while (my $row = $sth->fetchrow_hashref) {
         syl_1n = ?, syl_6y = ?, syl_3y = ?, syl_1y = ?,
         shengou_fee = ?, guanli_fee = ?, tuoguan_fee = ?, xiaoshou_fee = ?,
         shuhui_x30_fee = ?, shuhui_d30_fee = ?,
-        jigou_rate = ?, geren_rate = ?, neibu_rate = ?
+        jigou_rate = ?, geren_rate = ?, neibu_rate = ?,
+        guimo = ?
         WHERE code = ?", undef,
         $data{fS_name}, time(),
         # $tds[4], $tds[1], $tds[2], $tds[3], $tds[0],
 
         # jingzichan= ?, gupiao_rate= ?, zhaiquan_rate= ?, xianjin_rate= ?, report_date = ?,
-        $data{Data_assetAllocation}->{series}->[3]->{data}->[-1],
-        $data{Data_assetAllocation}->{series}->[0]->{data}->[-1],
-        $data{Data_assetAllocation}->{series}->[1]->{data}->[-1],
-        $data{Data_assetAllocation}->{series}->[2]->{data}->[-1],
+        $data{Data_assetAllocation}->{series}->[3]->{data}->[-1] // 0,
+        $data{Data_assetAllocation}->{series}->[0]->{data}->[-1] // 0,
+        $data{Data_assetAllocation}->{series}->[1]->{data}->[-1] // 0,
+        $data{Data_assetAllocation}->{series}->[2]->{data}->[-1] // 0,
         $data{Data_assetAllocation}->{categories}->[-1],
 
         $data{syl_1n}, $data{syl_6y}, $data{syl_3y} || 0, $data{syl_1y} || 0,
@@ -132,9 +150,12 @@ while (my $row = $sth->fetchrow_hashref) {
         $data{Data_holderStructure}->{series}->[1]->{data}->[-1],
         $data{Data_holderStructure}->{series}->[2]->{data}->[-1],
 
+        # guimo
+        $data{Data_fluctuationScale}->{series}->[-1]->{y},
+
         $row->{code}
     );
-    sleep 5;
+    sleep 1;
 }
 
 sub parse_fund {
@@ -146,7 +167,7 @@ sub parse_fund {
         # say $line;
         my ($k, $v) = split(/\s*=\s*/, $line, 2);
         $v =~ s/^[\'\"]|[\'\"]$//g; # remove ""
-        if (grep { $k eq $_ } ('Data_holderStructure', 'Data_assetAllocation')) {
+        if (grep { $k eq $_ } ('Data_holderStructure', 'Data_assetAllocation', 'Data_fluctuationScale')) {
             $v = decode_json($v);
         }
         $data{$k} = $v;
