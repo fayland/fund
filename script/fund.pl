@@ -148,12 +148,12 @@ while (my $row = $sth->fetchrow_hashref) {
         $data{shuhui_x30_fee} // 100, $data{shuhui_d30_fee} // 100,
 
         # jigou_rate = ?, geren_rate = ?, neibu_rate = ?
-        $data{Data_holderStructure}->{series}->[0]->{data}->[-1],
-        $data{Data_holderStructure}->{series}->[1]->{data}->[-1],
-        $data{Data_holderStructure}->{series}->[2]->{data}->[-1],
+        $data{Data_holderStructure}->{series}->[0]->{data} ? $data{Data_holderStructure}->{series}->[0]->{data}->[-1] : 0,
+        $data{Data_holderStructure}->{series}->[1]->{data} ? $data{Data_holderStructure}->{series}->[1]->{data}->[-1] : 0,
+        $data{Data_holderStructure}->{series}->[2]->{data} ? $data{Data_holderStructure}->{series}->[2]->{data}->[-1] : 0,
 
         # guimo
-        $data{Data_fluctuationScale}->{series}->[-1]->{y},
+        scalar(@{$data{Data_fluctuationScale}->{series}}) ? $data{Data_fluctuationScale}->{series}->[-1]->{y} : 0,
 
         $row->{code}
     );
